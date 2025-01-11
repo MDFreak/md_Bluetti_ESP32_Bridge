@@ -44,7 +44,7 @@ jobs:
           export ARDUINO_LIBRARY_ENABLE_UNSAFE_INSTALL=true && arduino-cli lib install --git-url https://github.com/me-no-dev/AsyncTCP.git
           export ARDUINO_LIBRARY_ENABLE_UNSAFE_INSTALL=true && arduino-cli lib install --git-url https://github.com/me-no-dev/ESPAsyncWebServer.git
           export ARDUINO_LIBRARY_ENABLE_UNSAFE_INSTALL=true && arduino-cli lib install --git-url https://github.com/h2zero/NimBLE-Arduino.git
-          arduino-cli lib install AsyncElegantOTA
+          arduino-cli lib install ElegantOTA
           arduino-cli lib install "Adafruit SSD1306"
           arduino-cli lib install "Adafruit GFX Library"
           arduino-cli lib install "Adafruit BusIO"

@@ -5,10 +5,11 @@
 
 typedef struct{
   int  salt = EEPROM_SALT;
-  char mqtt_server[40] = "127.0.0.1";
+  //char mqtt_server[40] = "127.0.0.1";
+  char mqtt_server[40] = "10.0.0.111";
   char mqtt_port[6]  = "1883";
-  char mqtt_username[40] = "";
-  char mqtt_password[40] = "";
+  char mqtt_username[40] = "MQTT";
+  char mqtt_password[40] = "MQTT-Tiny";
   char bluetti_device_id[40] = "Bluetti Blutetooth Id";
   char ota_username[40] = "";
   char ota_password[40] = "";
@@ -19,5 +20,5 @@ extern void initBWifi(bool resetWifi);
 extern void handleWebserver();
 String processorWebsiteUpdates(const String& var);
 extern void AddtoMsgView(String data);
-  
+
 #endif

@@ -22,7 +22,17 @@ void setup() {
   #ifdef DISPLAYSSD1306
     initDisplay();
   #endif
+
+
+  #ifdef DEBUG
+    Serial.println(F("vor initBWifi"));
+  #endif
   initBWifi(false);
+  #ifdef DEBUG
+    Serial.println(F("nach initBWifi"));
+  #endif
+
+
   initBluetooth();
   initMQTT();
   #ifdef DISPLAYSSD1306
@@ -35,6 +45,6 @@ void loop() {
     handleDisplay();
   #endif
   handleBluetooth();
-  handleMQTT(); 
+  handleMQTT();
   handleWebserver();
 }

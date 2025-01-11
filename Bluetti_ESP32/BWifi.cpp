@@ -8,23 +8,25 @@
 #include <ESPAsyncWebServer.h> // https://github.com/me-no-dev/ESPAsyncWebServer/archive/master.zip
 #include <AsyncTCP.h> // https://github.com/me-no-dev/AsyncTCP/archive/master.zip
 #include <ESPmDNS.h>
-#include <AsyncElegantOTA.h> // https://github.com/ayushsharma82/AsyncElegantOTA/archive/master.zip
+#include <ElegantOTA.h> // https://github.com/ayushsharma82/AsyncElegantOTA/archive/master.zip
 #include "display.h"
 
 AsyncWebServer server(80);
 AsyncEventSource events("/events");
 
-unsigned long lastTimeWebUpdate = 0;  
+unsigned long lastTimeWebUpdate = 0;
 
-String lastMsg = ""; 
+String lastMsg = "";
 
 bool msgViewerDetails = false;
 bool shouldSaveConfig = false;
 int wifiReconnectCounter = 0;
 
-char mqtt_server[40] = "127.0.0.1";
+//char mqtt_server[40] = "127.0.0.1";
+char mqtt_server[40] = "10.0.0.111";  // md 0.1.0
 char mqtt_port[6]  = "1883";
-char bluetti_device_id[40] = "e.g. ACXXXYYYYYYYY";
+//char bluetti_device_id[40] = "e.g. ACXXXYYYYYYYY";
+char bluetti_device_id[40] = "AC3002235000574654";  // md 0.1.0
 
 void saveConfigCallback () {
   shouldSaveConfig = true;
@@ -65,8 +67,8 @@ void initBWifi(bool resetWifi){
 
   WiFiManagerParameter custom_mqtt_server("server", "MQTT Server Address", mqtt_server, 40);
   WiFiManagerParameter custom_mqtt_port("port", "MQTT Server Port", mqtt_port, 6);
-  WiFiManagerParameter custom_mqtt_username("username", "MQTT Username", "", 40);
-  WiFiManagerParameter custom_mqtt_password("password", "MQTT Password", "", 40, "type=password");
+  WiFiManagerParameter custom_mqtt_username("username", "MQTT Username", "MQTT", 40);
+  WiFiManagerParameter custom_mqtt_password("password", "MQTT Password", "MQTT-Tiny", 40, "type=password");
   WiFiManagerParameter custom_ota_username("ota_username", "OTA Username", "", 40);
   WiFiManagerParameter custom_ota_password("ota_password", "OTA Password", "", 40, "type=password");
   WiFiManagerParameter custom_bluetti_device("bluetti", "Bluetti Bluetooth ID", bluetti_device_id, 40);
@@ -95,10 +97,10 @@ void initBWifi(bool resetWifi){
   wifiManager.addParameter(&custom_ota_username);
   wifiManager.addParameter(&custom_ota_password);
   wifiManager.addParameter(&custom_bluetti_device);
-  
+
   wifiManager.setAPCallback([&](WiFiManager* wifiManager) {
-		Serial.printf("Entered config mode:ip=%s, ssid='%s'\n", 
-                        WiFi.softAPIP().toString().c_str(), 
+		Serial.printf("Entered config mode:ip=%s, ssid='%s'\n",
+                        WiFi.softAPIP().toString().c_str(),
                         wifiManager->getConfigPortalSSID().c_str());
                         #ifdef DISPLAYSSD1306
                           wrDisp_wifisignal(2); //AP mode
@@ -106,7 +108,7 @@ void initBWifi(bool resetWifi){
                           wrDisp_Status("Setup Wifi");
                         #endif
 	});
-  
+
   if (!wifiManager.autoConnect("Bluetti_ESP32")) {
     ESP.restart();
   }
@@ -138,7 +140,7 @@ void initBWifi(bool resetWifi){
     #endif
 
   }
-  
+
   WiFi.setAutoReconnect(true);
 
   Serial.println(F(""));
@@ -194,9 +196,9 @@ void initBWifi(bool resetWifi){
   server.addHandler(&events);
 
   if (!wifiConfig.ota_username) {
-    AsyncElegantOTA.begin(&server);
+    ElegantOTA.begin(&server);
   } else {
-    AsyncElegantOTA.begin(&server, wifiConfig.ota_username, wifiConfig.ota_password);
+    ElegantOTA.begin(&server, wifiConfig.ota_username, wifiConfig.ota_password);
   }
 
   server.begin();
@@ -205,11 +207,11 @@ void initBWifi(bool resetWifi){
 }
 
 void handleWebserver() {
-  
+
   //Serial.println(F("DEBUG handleWebserver"));
   if ((millis() - lastTimeWebUpdate) > MSG_VIEWER_REFRESH_CYCLE*1000) {
-    
-    // check wifi status every MSG_VIEWER_REFRESH_CYCLE and set display 
+
+    // check wifi status every MSG_VIEWER_REFRESH_CYCLE and set display
     if (WiFi.status() != WL_CONNECTED) {
       Serial.println(F("WiFi is disconnected, try to reconnect..."));
       #ifdef DISPLAYSSD1306
@@ -249,15 +251,15 @@ void handleWebserver() {
     events.send(String(getLastBTMessageTime()).c_str(),"bt_last_msg_time",millis());
     if(msgViewerDetails){
       events.send(lastMsg.c_str(),"last_msg",millis());
-    } 
-    
+    }
+
     lastTimeWebUpdate = millis();
   }
 }
 
 
 String processorWebsiteUpdates(const String& var){
-  
+
   if(var == "IP"){
     return String(WiFi.localIP().toString());
   }
@@ -280,7 +282,7 @@ String processorWebsiteUpdates(const String& var){
     }else{
       strlcpy(msg, wifiConfig.mqtt_server, 40);
     }
-    
+
     return msg;
   }
   else if(var == "MQTT_PORT"){
@@ -323,9 +325,9 @@ String processorWebsiteUpdates(const String& var){
 }
 
 void AddtoMsgView(String data){
-  
+
   String tempMsg = "";
-  
+
   int firstPos = lastMsg.indexOf("</p>");
   int nextPos = firstPos;
   int numEntry = 0;
