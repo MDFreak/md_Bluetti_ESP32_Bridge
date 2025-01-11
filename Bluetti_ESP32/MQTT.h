@@ -17,3 +17,8 @@ unsigned long getLastMQTTDeviceStateMessageTime();
 unsigned long getLastMQTTDeviceStateStatusMessageTime();
 
 #endif
+/* - changelog --------------------------------------------------------------------------
+ * MD0.0.1 - 2025-01-11 - md - initial version
+ *
+ * - change code format to MD format for better readability
+ * ------------------------------------------------------------------------------------- */
