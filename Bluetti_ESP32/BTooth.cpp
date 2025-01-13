@@ -9,7 +9,9 @@
     #include "display.h"
   #endif
 int pollTick = 0;
-
+#ifdef SIM_BLUETTI
+    uint8_t simTick = 0;
+  #endif
 struct command_handle
   {
     uint8_t page;
@@ -221,62 +223,153 @@ void sendBTCommand(bt_command_t command)
                     Serial.println(String(parse_serial_field((uint8_t*) val),8)); Serial.println();
                   break;
                 case 2: // ARM_VERSION - VERSION_FIELD
-                    val[0]=0x03; val[1]=0xC7; val[2]=0x00; val[3]=0x00;
+                    val[0]=0x03; val[1]=0xC7; val[2]=0x00; val[3]=simTick;
                     publishTopic(bluetti_device_state[i].f_name, String(parse_version_field(val),2));
                     Serial.print("[BT] SIM - publish ARM_VERSION: ");
                     Serial.println(String(parse_version_field(&val[0]),2)); Serial.println();
                   break;
                 case 3: // DSP_VERSION - VERSION_FIELD
-                    val[0]=0x04; val[1]=0xC7; val[2]=0x00; val[3]=0x00;
+                    val[0]=0x04; val[1]=0xC7; val[2]=0x00; val[3]=simTick;
                     publishTopic(bluetti_device_state[i].f_name, String(parse_version_field(val),2));
                     Serial.print("[BT] SIM - publish DSP_VERSION: "); Serial.println();
                     Serial.println(String(parse_version_field(&val[0]),2));
                   break;
                 case 4: // DC_INPUT_POWER - UINT_FIELD
-                    val[0]=11; val[1]=0;   // -> 2816 (0B00)
+                    val[0]=0; val[1]=12+simTick;   // -> 2816 (0B00)
                     publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
                     Serial.print("[BT] SIM - DC_INPUT_POWER: ");
                     Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
                 case 5: // AC_INPUT_POWER - UINT_FIELD
-                    val[0]=0; val[1]=11;   // -> 11 (000B)
+                    val[0]=0; val[1]=11+simTick;   // -> 11 (000B)
                     publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
                     Serial.print("[BT] SIM - AC_INPUT_POWER: ");
                     Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
                 case 6: // AC_OUTPUT_POWER - UINT_FIELD
-                    val[0]=22; val[1]=0;   // -> 5632 (1600)
+                    val[0]=22; val[1]=30+simTick;   // -> 5632 (1600)
                     publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
                     Serial.print("[BT] SIM - AC_OUTPUT_POWER: ");
                     Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
                 case 7: // DC_OUTPUT_POWER - UINT_FIELD
-                    val[0]=0; val[1]=22;   // -> 22 (0016)
+                    val[0]=0; val[1]=13+simTick;   // -> 22 (0016)
                     publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
                     Serial.print("[BT] SIM - DC_OUTPUT_POWER: ");
                     Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case 8: // DC_OUTPUT_POWER - UINT_FIELD
+                case 8: // POWER_GENERATION - DECIMAL_FIELD
                     //sprintf(val, "AC300");
                     //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
                     //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
                   break;
-                case 9: // DC_OUTPUT_POWER - UINT_FIELD
+                case 9: // TOTAL_BATTERY_PERCENT - UINT_FIELD
                     //sprintf(val, "AC300");
                     //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
                     //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
                   break;
-                case 10: // DC_OUTPUT_POWER - UINT_FIELD
+                case 10: // AC_OUTPUT_ON - BOOL_FIELD
                     //sprintf(val, "AC300");
                     //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
                     //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
                   break;
-                case 11: // DC_OUTPUT_POWER - UINT_FIELD
+                case 11: // DC_OUTPUT_ON - BOOL_FIELD
                     //sprintf(val, "AC300");
                     //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
                     //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
                   break;
-                case 12: // DC_OUTPUT_POWER - UINT_FIELD
+                case 12: // AC_OUTPUT_MODE - UINT_FIELD
+                    //sprintf(val, "AC300");
+                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                  break;
+                case 13: // INTERNAL_AC_VOLTAGE - DECIMAL_FIELD
+                    //sprintf(val, "AC300");
+                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                case 14: // INTERNAL_CURRENT_ONE - DECIMAL_FIELD
+                    //sprintf(val, "AC300");
+                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                case 15: // INTERNAL_POWER_ONE - UINT_FIELD
+                    //sprintf(val, "AC300");
+                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                case 16: // INTERNAL_AC_FREQUENCY - DECIMAL_FIELD
+                    //sprintf(val, "AC300");
+                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                case 17: // INTERNAL_CURRENT_TWO - DECIMAL_FIELD
+                    //sprintf(val, "AC300");
+                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                case 18: // INTERNAL_POWER_TWO - UINT_FIELD
+                    //sprintf(val, "AC300");
+                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                case 19: // AC_INPUT_VOLTAGE - DECIMAL_FIELD
+                    //sprintf(val, "AC300");
+                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                case 20: // INTERNAL_CURRENT_THREE - DECIMAL_FIELD
+                    //sprintf(val, "AC300");
+                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                case 21: // INTERNAL_POWER_THREE - UINT_FIELD
+                    //sprintf(val, "AC300");
+                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                case 22: // AC_INPUT_FREQUENCY - DECIMAL_FIELD
+                    //sprintf(val, "AC300");
+                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                  break;
+                case 23: // INTERNAL_DC_INPUT_VOLTAGE - DECIMAL_FIELD
+                    //sprintf(val, "AC300");
+                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                  break;
+                case 24: // INTERNAL_DC_INPUT_POWER - UINT_FIELD
+                    //sprintf(val, "AC300");
+                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                  break;
+                case 25: // INTERNAL_DC_INPUT_CURRENT - DECIMAL_FIELD
+                    //sprintf(val, "AC300");
+                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                  break;
+                case 26: // PACK_NUM_MAX - UINT_FIELD
+                    //sprintf(val, "AC300");
+                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                  break;
+                case 27: // INTERNAL_PACK_VOLTAGE - DECIMAL_FIELD
+                    //sprintf(val, "AC300");
+                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                  break;
+                case 28: // PACK_NUM - UINT_FIELD
+                    //sprintf(val, "AC300");
+                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                  break;
+                case 29: // PACK_BATTERY_PERCENT - UINT_FIELD
+                    //sprintf(val, "AC300");
+                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                  break;
+                case 30: // UPS_MODE - UINT_FIELD
+                    //sprintf(val, "AC300");
+                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                  break;
+                case 31: // GRID_CHARGE_ON - BOOL_FIELD
+                    //sprintf(val, "AC300");
+                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                  break;
+                case 32: // AUTO_SLEEP_MODE - UINT_FIELD
                     //sprintf(val, "AC300");
                     //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
                     //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
@@ -284,6 +377,8 @@ void sendBTCommand(bt_command_t command)
 
               }
           }
+        simTick++;
+        if (simTick >= 8) { simTick = 0; }
       }
   #endif
 void handleBluetooth()
