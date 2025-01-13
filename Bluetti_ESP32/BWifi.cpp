@@ -1,3 +1,4 @@
+/* -- BWifi.cpp -- MD0.0.2----------------------------------------------------------------------*/
 #include "BluettiConfig.h"
 #include "BWifi.h"
 #include "BTooth.h"
@@ -70,7 +71,8 @@ void initBWifi(bool resetWifi)
     WiFiManagerParameter custom_mqtt_password("password", "MQTT Password", "MQTT-Tiny", 40, "type=password");
     WiFiManagerParameter custom_ota_username("ota_username", "OTA Username", "", 40);
     WiFiManagerParameter custom_ota_password("ota_password", "OTA Password", "", 40, "type=password");
-    WiFiManagerParameter custom_bluetti_device("bluetti", "Bluetti Bluetooth ID", bluetti_device_id, 40);
+    //WiFiManagerParameter custom_bluetti_device("bluetti", "Bluetti Bluetooth ID", bluetti_device_id, 40);
+    WiFiManagerParameter custom_bluetti_device("bluetti", "AC300-1", bluetti_device_id, 40);
 
     WiFiManager wifiManager;
 
@@ -383,9 +385,12 @@ void AddtoMsgView(String data)
         lastMsg = lastMsg + "<p>" + data + "</p>";
       }
   }
-/* - changelog --------------------------------------------------------------------------
- * MD0.0.1 - 2025-01-11 - md - initial version
- *
+// - changelog --------------------------------------------------------------------------
+/* MD0.0.2 - 2025-01-13 - simuting Bluetti data for MQTT
+ * - set default data for connections
+ * -
+ * ------------------------------------------------------------------------------------- */
+/* MD0.0.1 - 2025-01-11 - md - initial version
  * - new define USE_DISPLAY (-> platform.ini)
  *   ndef USE_DISPLAY = no display implemented
  * - change code format to MD format for better readability

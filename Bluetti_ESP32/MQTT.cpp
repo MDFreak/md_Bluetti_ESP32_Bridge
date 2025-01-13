@@ -1,3 +1,4 @@
+/* -- MQTT.cpp -- MD0.0.1----------------------------------------------------------------------*/
 #include "BluettiConfig.h"
 #include "MQTT.h"
 #include "BWifi.h"
@@ -375,14 +376,17 @@ void publishDeviceStateStatus()
     sprintf(publishTopicBuf, "bluetti/%s/state/%s", settings.bluetti_device_id, "device_status" );
     String value = "{\"MQTTconnected\":" + String(isMQTTconnected()) + ", \"BTconnected\":" + String(isBTconnected()) + "}";
     #ifdef DEBUG
-      Serial.println("[MQTT] PublishingDeviceStateStatus: "+value);
-    #endif
+        Serial.println("[MQTT] PublishingDeviceStateStatus: "+value);
+      #endif
     if (!client.publish(publishTopicBuf, value.c_str() ))
       {
         publishErrorCount++;
       }
     lastMQTTMessage = millis();
     previousDeviceStateStatusPublish = millis();
+    #ifdef DEBUG
+        Serial.println("[MQTT] PublishingDeviceStateStatus: reached end");
+      #endif
   }
 void initMQTT()
   {
@@ -423,6 +427,7 @@ void initMQTT()
         publishDeviceState();
         publishDeviceStateStatus();
       }
+    Serial.println("[MQTT] init MQTT end");
   };
 void handleMQTT()
   {

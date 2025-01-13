@@ -1,3 +1,4 @@
+/* -- BTooth.h -- MD0.0.1----------------------------------------------------------------------*/
 #ifndef BTOOTH_H
   #define BTOOTH_H
   #include "Arduino.h"
@@ -12,12 +13,12 @@
 
   typedef struct __attribute__ ((packed))
     {
-      uint8_t prefix;            // 1 byte
-      uint8_t field_update_cmd;  // 1 byte
-      uint8_t page;              // 1 byte
-      uint8_t offset;            // 1 byte
-      uint16_t len;              // 2 bytes
-      uint16_t check_sum;        // 2 bytes
+      uint8_t  prefix;            //  1 byte
+      uint8_t  field_update_cmd;  //  1 byte
+      uint8_t  page;              //  1 byte
+      uint8_t  offset;            //  1 byte
+      uint16_t len;               //  2 bytes
+      uint16_t check_sum;         //  2 bytes
     } bt_command_t;
 
   // The remote Bluetti service we wish to connect to.
@@ -36,8 +37,8 @@
   extern bool isBTconnected();
   extern unsigned long getLastBTMessageTime();
 #endif
-/* - changelog --------------------------------------------------------------------------
- * MD0.0.1 - 2025-01-11 - md - initial version
- *
+/* MD0.0.1 - 2025-01-11 - md - initial version
+ * - new define USE_DISPLAY (-> platform.ini)
+ *   ndef USE_DISPLAY = no display implemented
  * - change code format to MD format for better readability
- * ------------------------------------------------------------------------------------- */
+ *///------------------------------------------------------------------------------------

@@ -1,3 +1,4 @@
+/* -- BTooth.cpp -- MD0.0.2----------------------------------------------------------------------*/
 #include "BWifi.h"
 #include "BTooth.h"
 #include "MQTT.h"
@@ -11,6 +12,10 @@ unsigned long timerDelay1 = 3000;
 void setup()
   {
     Serial.begin(115200);
+    #ifdef SIM_BLUETTI
+        Serial.print(millis());
+        Serial.println(" start setup");
+      #endif
     #ifdef RELAISMODE
         pinMode(RELAIS_PIN, OUTPUT);
         #ifdef DEBUG
@@ -40,6 +45,10 @@ void setup()
             wrDisp_Status("Running!");
           #endif
       #endif
+    #ifdef SIM_BLUETTI
+        Serial.print(millis());
+        Serial.println(" end setup");
+      #endif
   }
 void loop()
   {
@@ -52,10 +61,22 @@ void loop()
     handleMQTT();
     handleWebserver();
   }
-/* - changelog --------------------------------------------------------------------------
- * MD0.0.1 - 2025-01-11 - md - initial version
- *
+// - changelog --------------------------------------------------------------------------
+/* MD0.0.2 - 2025-01-13 - simuting Bluetti data for MQTT
+ * - introduce simulation for BT to implement MQTT without Bluetti
+ *   - new define SIM_BLUETTI (-> platform.ini)
+ *     used to block unused BT functions
+ *     and activate simulation function
+ *   - simulation starts in function 'handleBluetooth()' and uses
+ *     new function 'sendSIM_data()' to publish data
+ *     uses standard decoding methods
+ *   - works with 8 items
+ *   - add '#include "MQTT.h"' to Bluetooth.cpp
+ * - set default data for connections
+ * - introduce simulation for BT to implement MQTT without Bluetti
+ */// -----------------------------------------------------------------------------------
+/* MD0.0.1 - 2025-01-11 - md - initial version
  * - new define USE_DISPLAY (-> platform.ini)
  *   ndef USE_DISPLAY = no display implemented
  * - change code format to MD format for better readability
- * ------------------------------------------------------------------------------------- */
+ *///------------------------------------------------------------------------------------

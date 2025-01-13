@@ -1,8 +1,10 @@
+/* -- BTooth.cpp -- MD0.0.2----------------------------------------------------------------------*/
 #include "BluettiConfig.h"
 #include "BTooth.h"
 #include "utils.h"
 #include "PayloadParser.h"
 #include "BWifi.h"
+#include "MQTT.h"
 #ifdef USE_DISPLAY
     #include "display.h"
   #endif
@@ -109,59 +111,62 @@ static void notifyCallback(
 
 bool connectToServer()
   {
-    Serial.print(F("[BT] Forming a connection to "));
-    Serial.println(bluettiDevice->getAddress().toString().c_str());
-    BLEDevice::setMTU(517); // set client to request maximum MTU from server (default is 23 otherwise)
-    BLEClient*  pClient  = BLEDevice::createClient();
-    Serial.println(F("[BT] - Created client"));
-    pClient->setClientCallbacks(new MyClientCallback());
-    // Connect to the remove BLE Server.
-    pClient->connect(bluettiDevice);  // if you pass BLEAdvertisedDevice instead of address, it will be recognized type of peer device address (public or private)
-    Serial.println(F("[BT] - Connected to server"));
-    // pClient->setMTU(517); //set client to request maximum MTU from server (default is 23 otherwise)
-    // Obtain a reference to the service we are after in the remote BLE server.
-    BLERemoteService* pRemoteService = pClient->getService(serviceUUID);
-    if (pRemoteService == nullptr)
-      {
-        Serial.print(F("[BT] Failed to find our service UUID: "));
-        Serial.println(serviceUUID.toString().c_str());
-        pClient->disconnect();
-        return false;
-      }
-    Serial.println(F("[BT] - Found our service"));
-    // Obtain a reference to the characteristic in the service of the remote BLE server.
-    pRemoteWriteCharacteristic = pRemoteService->getCharacteristic(WRITE_UUID);
-    if (pRemoteWriteCharacteristic == nullptr)
-      {
-        Serial.print(F("[BT] Failed to find our characteristic UUID: "));
-        Serial.println(WRITE_UUID.toString().c_str());
-        pClient->disconnect();
-        return false;
-      }
-    Serial.println(F("[BT] - Found our Write characteristic"));
-    // Obtain a reference to the characteristic in the service of the remote BLE server.
-    pRemoteNotifyCharacteristic = pRemoteService->getCharacteristic(NOTIFY_UUID);
-    if (pRemoteNotifyCharacteristic == nullptr)
-      {
-        Serial.print(F("[BT] Failed to find our characteristic UUID: "));
-        Serial.println(NOTIFY_UUID.toString().c_str());
-        pClient->disconnect();
-        return false;
-      }
-    Serial.println(F("[BT] - Found our Write characteristic"));
-    // Read the value of the characteristic.
-    if(pRemoteWriteCharacteristic->canRead())
-      {
-        std::string value = pRemoteWriteCharacteristic->readValue();
-        Serial.print(F("[BT] The characteristic value was: "));
-        Serial.println(value.c_str());
-      }
+    #ifndef SIM_BLUETTI
+        Serial.print(F("[BT] Forming a connection to "));
+        Serial.println(bluettiDevice->getAddress().toString().c_str());
+        BLEDevice::setMTU(517); // set client to request maximum MTU from server (default is 23 otherwise)
+        BLEClient*  pClient  = BLEDevice::createClient();
+        Serial.println(F("[BT] - Created client"));
+        pClient->setClientCallbacks(new MyClientCallback());
+        // Connect to the remove BLE Server.
+        pClient->connect(bluettiDevice);  // if you pass BLEAdvertisedDevice instead of address, it will be recognized type of peer device address (public or private)
+        Serial.println(F("[BT] - Connected to server"));
+        // pClient->setMTU(517); //set client to request maximum MTU from server (default is 23 otherwise)
+        // Obtain a reference to the service we are after in the remote BLE server.
+        BLERemoteService* pRemoteService = pClient->getService(serviceUUID);
+        if (pRemoteService == nullptr)
+          {
+            Serial.print(F("[BT] Failed to find our service UUID: "));
+            Serial.println(serviceUUID.toString().c_str());
+            pClient->disconnect();
+            return false;
+          }
+        Serial.println(F("[BT] - Found our service"));
+        // Obtain a reference to the characteristic in the service of the remote BLE server.
+        pRemoteWriteCharacteristic = pRemoteService->getCharacteristic(WRITE_UUID);
+        if (pRemoteWriteCharacteristic == nullptr)
+          {
+            Serial.print(F("[BT] Failed to find our characteristic UUID: "));
+            Serial.println(WRITE_UUID.toString().c_str());
+            pClient->disconnect();
+            return false;
+          }
+        Serial.println(F("[BT] - Found our Write characteristic"));
+        // Obtain a reference to the characteristic in the service of the remote BLE server.
+        pRemoteNotifyCharacteristic = pRemoteService->getCharacteristic(NOTIFY_UUID);
+        if (pRemoteNotifyCharacteristic == nullptr)
+          {
+            Serial.print(F("[BT] Failed to find our characteristic UUID: "));
+            Serial.println(NOTIFY_UUID.toString().c_str());
+            pClient->disconnect();
+            return false;
+          }
+        Serial.println(F("[BT] - Found our Write characteristic"));
+        // Read the value of the characteristic.
+        if(pRemoteWriteCharacteristic->canRead())
+          {
+            std::string value = pRemoteWriteCharacteristic->readValue();
+            Serial.print(F("[BT] The characteristic value was: "));
+            Serial.println(value.c_str());
+          }
 
-    if(pRemoteNotifyCharacteristic->canNotify())
-      {
-        pRemoteNotifyCharacteristic->registerForNotify(notifyCallback);
-      }
-
+        if(pRemoteNotifyCharacteristic->canNotify())
+          {
+            pRemoteNotifyCharacteristic->registerForNotify(notifyCallback);
+          }
+      #else
+        Serial.println(F("[BT] SIM_BLUETTI - connected to server"));
+      #endif
     connected = true;
     #ifdef RELAISMODE
         #ifdef DEBUG
@@ -194,8 +199,99 @@ void sendBTCommand(bt_command_t command)
       bt_command_t cmd = command;
       xQueueSend(sendQueue, &cmd, 0);
   }
+#ifdef SIM_BLUETTI
+    void sendSIM_data()
+      {
+        uint8_t val[20];
+        for (int i = 0; i < 8 ; i++ ) //sizeof(bluetti_device_state) / sizeof(device_field_data_t); i++)
+          {
+            switch(i)
+              {
+                case 0: // DEVICE_TYPE - STRINGFIELD
+                    sprintf((char*) val, "AC300");
+                    publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    Serial.print("[BT] SIM - publish DEVICE_TYPE: ");
+                    Serial.println(parse_string_field((uint8_t*) val)); Serial.println();
+                  break;
+                case 1: // SERIAL_NUMBER - SN_FIELD
+                    val[0]=0x01; val[1]=0x02; val[2]=0x03; val[3]=0x04;
+                    val[4]=0x05; val[5]=0x06; val[6]=0x07; val[7]=0x08;
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_serial_field((uint8_t*) val)));
+                    Serial.print("[BT] SIM - publish SERIAL_NUMBER: ");
+                    Serial.println(String(parse_serial_field((uint8_t*) val),8)); Serial.println();
+                  break;
+                case 2: // ARM_VERSION - VERSION_FIELD
+                    val[0]=0x03; val[1]=0xC7; val[2]=0x00; val[3]=0x00;
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_version_field(val),2));
+                    Serial.print("[BT] SIM - publish ARM_VERSION: ");
+                    Serial.println(String(parse_version_field(&val[0]),2)); Serial.println();
+                  break;
+                case 3: // DSP_VERSION - VERSION_FIELD
+                    val[0]=0x04; val[1]=0xC7; val[2]=0x00; val[3]=0x00;
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_version_field(val),2));
+                    Serial.print("[BT] SIM - publish DSP_VERSION: "); Serial.println();
+                    Serial.println(String(parse_version_field(&val[0]),2));
+                  break;
+                case 4: // DC_INPUT_POWER - UINT_FIELD
+                    val[0]=11; val[1]=0;   // -> 2816 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    Serial.print("[BT] SIM - DC_INPUT_POWER: ");
+                    Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case 5: // AC_INPUT_POWER - UINT_FIELD
+                    val[0]=0; val[1]=11;   // -> 11 (000B)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    Serial.print("[BT] SIM - AC_INPUT_POWER: ");
+                    Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case 6: // AC_OUTPUT_POWER - UINT_FIELD
+                    val[0]=22; val[1]=0;   // -> 5632 (1600)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    Serial.print("[BT] SIM - AC_OUTPUT_POWER: ");
+                    Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case 7: // DC_OUTPUT_POWER - UINT_FIELD
+                    val[0]=0; val[1]=22;   // -> 22 (0016)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    Serial.print("[BT] SIM - DC_OUTPUT_POWER: ");
+                    Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case 8: // DC_OUTPUT_POWER - UINT_FIELD
+                    //sprintf(val, "AC300");
+                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                  break;
+                case 9: // DC_OUTPUT_POWER - UINT_FIELD
+                    //sprintf(val, "AC300");
+                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                  break;
+                case 10: // DC_OUTPUT_POWER - UINT_FIELD
+                    //sprintf(val, "AC300");
+                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                  break;
+                case 11: // DC_OUTPUT_POWER - UINT_FIELD
+                    //sprintf(val, "AC300");
+                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                  break;
+                case 12: // DC_OUTPUT_POWER - UINT_FIELD
+                    //sprintf(val, "AC300");
+                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
+                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                  break;
+
+              }
+          }
+      }
+  #endif
 void handleBluetooth()
   {
+    #ifdef SIM_BLUETTI
+        doConnect = false;
+        connected = true;
+      #endif
     if (doConnect == true)
       {
         if (connectToServer())
@@ -208,42 +304,46 @@ void handleBluetooth()
           }
         doConnect = false;
       }
-    if ((millis() - lastBTMessage) > (MAX_DISCONNECTED_TIME_UNTIL_REBOOT * 60000))
-      {
-        Serial.println(F("[BT] disconnected over allowed limit, reboot device"));
-        #ifdef SLEEP_TIME_ON_BT_NOT_AVAIL
-            esp_deep_sleep_start();
-          #else
-            ESP.restart();
-          #endif
-      }
+    #ifndef SIM_BLUETTI
+        if ((millis() - lastBTMessage) > (MAX_DISCONNECTED_TIME_UNTIL_REBOOT * 60000))
+          {
+            Serial.println(F("[BT] disconnected over allowed limit, reboot device"));
+            #ifdef SLEEP_TIME_ON_BT_NOT_AVAIL
+                esp_deep_sleep_start();
+              #else
+                ESP.restart();
+              #endif
+          }
+      #endif
     if (connected)
       {
         // poll for device state
         if ( millis() - lastBTMessage > BLUETOOTH_QUERY_MESSAGE_DELAY)
           {
-            bt_command_t command;
-            command.prefix = 0x01;
-            command.field_update_cmd = 0x03;
-            command.page = bluetti_polling_command[pollTick].f_page;
-            command.offset = bluetti_polling_command[pollTick].f_offset;
-            command.len = (uint16_t) bluetti_polling_command[pollTick].f_size << 8;
-            command.check_sum = modbus_crc((uint8_t*)&command,6);
+            #ifndef SIM_BLUETTI
+                bt_command_t command;
+                command.prefix = 0x01;
+                command.field_update_cmd = 0x03;
+                command.page = bluetti_polling_command[pollTick].f_page;
+                command.offset = bluetti_polling_command[pollTick].f_offset;
+                command.len = (uint16_t) bluetti_polling_command[pollTick].f_size << 8;
+                command.check_sum = modbus_crc((uint8_t*)&command,6);
 
-            xQueueSend(commandHandleQueue, &command, portMAX_DELAY);
-            xQueueSend(sendQueue, &command, portMAX_DELAY);
-
+                xQueueSend(commandHandleQueue, &command, portMAX_DELAY);
+                xQueueSend(sendQueue, &command, portMAX_DELAY);
+              #else
+                Serial.print(millis()); Serial.print(" -> sendSIM_data "); Serial.println(pollTick);
+                sendSIM_data();
+              #endif
             if (pollTick == sizeof(bluetti_polling_command)/sizeof(device_field_data_t)-1 )
-              {
-                pollTick = 0;
-              }
+              { pollTick = 0; }
               else
-              {
-                pollTick++;
-              }
+              { pollTick++; }
+            #ifndef SIM_BLUETTI
+                handleBTCommandQueue();
+              #endif
             lastBTMessage = millis();
           }
-        handleBTCommandQueue();
       }
       else if(doScan)
       {
@@ -262,12 +362,27 @@ unsigned long getLastBTMessageTime()
   {
       return lastBTMessage;
   }
-/* - changelog --------------------------------------------------------------------------
- * MD0.0.1 - 2025-01-11 - md - initial version
- *
+// - changelog --------------------------------------------------------------------------
+/* MD0.0.2 - 2025-01-13 - simuting Bluetti data for MQTT
+ * - introduce simulation for BT to implement MQTT without Bluetti
+ *   - new define SIM_BLUETTI (-> platform.ini)
+ *     used to block unused BT functions
+ *     and activate simulation function
+ *   - simulation starts in function 'handleBluetooth()' and uses
+ *     new function 'sendSIM_data()' to publish data
+ *     uses standard decoding methods
+ *   - works with 8 items
+ *   - add '#include "MQTT.h"' to Bluetooth.cpp
+ * - set default data for connections
+ * - introduce simulation for BT to implement MQTT without Bluetti
+ */// -----------------------------------------------------------------------------------
+/* MD0.0.1 - 2025-01-11 - md - initial version
  * - new define USE_DISPLAY (-> platform.ini)
  *   ndef USE_DISPLAY = no display implemented
  * - change code format to MD format for better readability
- * ------------------------------------------------------------------------------------- */
+ *///------------------------------------------------------------------------------------
+
+
+
 
 

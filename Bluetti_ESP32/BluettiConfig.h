@@ -1,3 +1,4 @@
+/* -- BTooth.h -- MD0.0.1----------------------------------------------------------------------*/
 #ifndef BLUETTI_CONFIG_H
   #define BLUETTI_CONFIG_H
 
@@ -21,8 +22,8 @@
    #include "Device_EP600.h"
   #endif
 #endif
-/* - changelog --------------------------------------------------------------------------
- * MD0.0.1 - 2025-01-11 - md - initial version
- *
+/* MD0.0.1 - 2025-01-11 - md - initial version
+ * - new define USE_DISPLAY (-> platform.ini)
+ *   ndef USE_DISPLAY = no display implemented
  * - change code format to MD format for better readability
- * ------------------------------------------------------------------------------------- */
+ *///------------------------------------------------------------------------------------

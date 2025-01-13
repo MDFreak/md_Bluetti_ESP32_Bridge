@@ -1,3 +1,4 @@
+/* -- BWifi.h -- MD0.0.1----------------------------------------------------------------------*/
 #ifndef CONFIG_H
   #define CONFIG_H
   #include "Arduino.h"
@@ -26,7 +27,11 @@
   #define DEVICE_NAME "BLUETTI-MQTT" // MDFREAK-0.0.1
   #define BLUETTI_TYPE AC300
 
-  #define BLUETOOTH_QUERY_MESSAGE_DELAY 3000
+  #ifndef SIM_BLUETTI
+      #define BLUETOOTH_QUERY_MESSAGE_DELAY 5000
+    #else
+      #define BLUETOOTH_QUERY_MESSAGE_DELAY 10000
+    #endif
   #define BLUETOOTH_MAX_RETRIES_BEFORE_REBOOT 10
   #define BLUETOOTH_SCAN_DURATION_IN_SECONDS 10
   #define BLUETOOTH_SCAN_INTERVAL_IN_SECONDS 10

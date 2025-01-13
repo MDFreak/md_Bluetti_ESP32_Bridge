@@ -1,9 +1,9 @@
+/* -- DeviceType.h -- MD0.0.1 ---------------------------------------------------------*/
 #ifndef __DEVICE_TYPE_H__
 #define __DEVICE_TYPE_H__
 #include "Arduino.h"
 
-enum field_types
-  {
+enum field_types {
     UINT_FIELD,
     BOOL_FIELD,
     ENUM_FIELD,
@@ -13,9 +13,8 @@ enum field_types
     VERSION_FIELD,
     SN_FIELD,
     TYPE_UNDEFINED
-  };
-enum field_names
-  {
+ };
+enum field_names {
     DC_OUTPUT_POWER,
     DC_OUTPUT_ON,
     AC_OUTPUT_POWER,
@@ -79,9 +78,8 @@ enum field_names
     AC_OUTPUT_CURRENT_MAX,
     BATTERY_MIN_PERCENTAGE,   // Discharge lower limit
     AC_CHARGE_MAX_PERCENTAGE  // Percentage to which point battery will be charged with AC
-  };
-typedef struct device_field_data
-  {
+};
+typedef struct device_field_data {
     enum field_names f_name;
     uint8_t f_page;
     uint8_t f_offset;
@@ -89,10 +87,8 @@ typedef struct device_field_data
     int8_t f_scale;
     int8_t f_enum;
     enum field_types f_type;
-  } device_field_data_t;
+} device_field_data_t;
 #endif
-/* - changelog --------------------------------------------------------------------------
- * MD0.0.1 - 2025-01-11 - md - initial version
- *
+/* MD0.0.1 - 2025-01-11 - md - initial version
  * - change code format to MD format for better readability
- * ------------------------------------------------------------------------------------- */
+ *///------------------------------------------------------------------------------------
