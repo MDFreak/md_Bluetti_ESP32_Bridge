@@ -49,7 +49,7 @@ void parse_bluetooth_data(uint8_t page, uint8_t offset, uint8_t* pData, size_t l
     sprintf(Byte_In_Hex_offset, "%x", offset);
     sprintf(Byte_In_Hex_page, "%x", page);
 
-    switch(pData[1])
+    switch(pData[1])  // ignore the first byte, it's fix 0x01
       {
         // range request
         case 0x03:
@@ -98,6 +98,8 @@ void parse_bluetooth_data(uint8_t page, uint8_t offset, uint8_t* pData, size_t l
                         publishTopic(bluetti_device_state[i].f_name, parse_string_field(data_payload_field));
                         break;
                       // doesn't work yet, not implemented further
+                      case DEC_ARRAY_FIELD:
+                        break;
                       case ENUM_FIELD:
                         publishTopic(bluetti_device_state[i].f_name, parse_enum_field(data_payload_field));
                         break;

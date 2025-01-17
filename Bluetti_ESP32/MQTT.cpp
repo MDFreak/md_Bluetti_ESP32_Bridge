@@ -24,192 +24,119 @@ String map_field_name(enum field_names f_name)
   {
     switch(f_name)
       {
-        case DC_OUTPUT_POWER:
-          return "dc_output_power";
-          break;
-        case AC_OUTPUT_POWER:
-          return "ac_output_power";
-          break;
-        case DC_OUTPUT_ON:
-          return "dc_output_on";
-          break;
-        case AC_OUTPUT_ON:
-          return "ac_output_on";
-          break;
-        case AC_OUTPUT_MODE:
-          return "ac_output_mode";
-          break;
-        case POWER_GENERATION:
-          return "power_generation";
-          break;
-        case TOTAL_BATTERY_PERCENT:
-          return "total_battery_percent";
-          break;
-        case DC_INPUT_POWER:
-          return "dc_input_power";
-          break;
-        case AC_INPUT_POWER:
-          return "ac_input_power";
-          break;
-        case AC_INPUT_VOLTAGE:
-          return "ac_input_voltage";
-          break;
-        case AC_INPUT_FREQUENCY:
-          return "ac_input_frequency";
-          break;
-        case PACK_VOLTAGE:
-          return "pack_voltage";
-          break;
-        case INTERNAL_PACK_VOLTAGE:
-          return "internal_pack_voltage";
-          break;
-        case SERIAL_NUMBER:
-          return "serial_number";
-          break;
-        case ARM_VERSION:
-          return "arm_version";
-          break;
-        case DSP_VERSION:
-          return "dsp_version";
-          break;
-        case DEVICE_TYPE:
-          return "device_type";
-          break;
-        case UPS_MODE:
-          return "ups_mode";
-          break;
-        case AUTO_SLEEP_MODE:
-          return "auto_sleep_mode";
-          break;
-        case GRID_CHARGE_ON:
-          return "grid_charge_on";
-          break;
-        case INTERNAL_AC_VOLTAGE:
-          return "internal_ac_voltage";
-          break;
-        case INTERNAL_AC_FREQUENCY:
-          return "internal_ac_frequency";
-          break;
-        case INTERNAL_CURRENT_ONE:
-          return "internal_current_one";
-          break;
-        case INTERNAL_POWER_ONE:
-          return "internal_power_one";
-          break;
-        case INTERNAL_CURRENT_TWO:
-          return "internal_current_two";
-          break;
-        case INTERNAL_POWER_TWO:
-          return "internal_power_two";
-          break;
-        case INTERNAL_CURRENT_THREE:
-          return "internal_current_three";
-          break;
-        case INTERNAL_POWER_THREE:
-          return "internal_power_three";
-          break;
-        case PACK_NUM_MAX:
-          return "pack_max_num";
-          break;
-        case PACK_NUM:
-          return "pack_num";
-          break;
-        case PACK_BATTERY_PERCENT:
-          return "pack_battery_percent";
-          break;
-        case INTERNAL_DC_INPUT_VOLTAGE:
-          return "internal_dc_input_voltage";
-          break;
-        case INTERNAL_DC_INPUT_POWER:
-          return "internal_dc_input_power";
-          break;
-        case INTERNAL_DC_INPUT_CURRENT:
-          return "internal_dc_input_current";
-          break;
-        case INTERNAL_CELL01_VOLTAGE:
-          return "internal_cell01_voltage";
-          break;
-        case INTERNAL_CELL02_VOLTAGE:
-          return "internal_cell02_voltage";
-          break;
-        case INTERNAL_CELL03_VOLTAGE:
-          return "internal_cell03_voltage";
-          break;
-        case INTERNAL_CELL04_VOLTAGE:
-          return "internal_cell04_voltage";
-          break;
-        case INTERNAL_CELL05_VOLTAGE:
-          return "internal_cell05_voltage";
-          break;
-        case INTERNAL_CELL06_VOLTAGE:
-          return "internal_cell06_voltage";
-          break;
-        case INTERNAL_CELL07_VOLTAGE:
-          return "internal_cell07_voltage";
-          break;
-        case INTERNAL_CELL08_VOLTAGE:
-          return "internal_cell08_voltage";
-          break;
-        case INTERNAL_CELL09_VOLTAGE:
-          return "internal_cell09_voltage";
-          break;
-        case INTERNAL_CELL10_VOLTAGE:
-          return "internal_cell10_voltage";
-          break;
-        case INTERNAL_CELL11_VOLTAGE:
-          return "internal_cell11_voltage";
-          break;
-        case INTERNAL_CELL12_VOLTAGE:
-          return "internal_cell12_voltage";
-          break;
-        case INTERNAL_CELL13_VOLTAGE:
-          return "internal_cell13_voltage";
-          break;
-        case INTERNAL_CELL14_VOLTAGE:
-          return "internal_cell14_voltage";
-          break;
-        case INTERNAL_CELL15_VOLTAGE:
-          return "internal_cell15_voltage";
-          break;
-        case INTERNAL_CELL16_VOLTAGE:
-          return "internal_cell16_voltage";
-          break;
-        case LED_MODE:
-          return "led_mode";
-          break;
-        case POWER_OFF:
-          return "power_off";
-          break;
-        case ECO_ON:
-          return "eco_on";
-          break;
-        case ECO_SHUTDOWN:
-          return "eco_shutdown";
-          break;
-        case CHARGING_MODE:
-          return "charging_mode";
-          break;
-        case POWER_LIFTING_ON:
-          return "power_lifting_on";
-          break;
-        case AC_INPUT_POWER_MAX:
-          return "ac_input_power_max";
-          break;
-        case AC_INPUT_CURRENT_MAX:
-          return "ac_input_current_max";
-          break;
-        case AC_OUTPUT_POWER_MAX:
-          return "ac_output_power_max";
-          break;
-        case AC_OUTPUT_CURRENT_MAX:
-          return "ac_output_current_max";
-          break;
-        case BATTERY_MIN_PERCENTAGE:
-          return "battery_min_percentage";
-          break;
-        case AC_CHARGE_MAX_PERCENTAGE:
-          return "ac_charge_max_percentage";
-          break;
+        case DEVICE_TYPE:               return "device_type";               break;
+        case ADR_0x0010_UINT:           return "adr_0x0010_uint";           break;
+        case SERIAL_NUMBER:             return "serial_number";             break;
+        case ADR_0x0012_UINT:           return "adr_0x0012_uint";           break;
+        case ADR_0x0013_UINT:           return "adr_0x0013_uint";           break;
+        case ARM_VERSION:               return "arm_version";               break;
+        case DSP_VERSION:               return "dsp_version";               break;
+        case ADR_0x001B_UINT:           return "adr_0x001B_uint";           break;
+        case ADR_0x001C_UINT:           return "adr_0x001C_uint";           break;
+        case ADR_0x001D_UINT:           return "adr_0x001D_uint";           break;
+        case ADR_0x001E_UINT:           return "adr_0x001E_uint";           break;
+        case ADR_0x001F_UINT:           return "adr_0x001F_uint";           break;
+        case ADR_0x0020_UINT:           return "adr_0x0020_uint";           break;
+        case ADR_0x0021_UINT:           return "adr_0x0021_uint";           break;
+        case ADR_0x0022_UINT:           return "adr_0x0022_uint";           break;
+        case ADR_0x0023_UINT:           return "adr_0x0023_uint";           break;
+        case DC_INPUT_POWER:            return "dc_input_power";            break;
+        case AC_INPUT_POWER:            return "ac_input_power";            break;
+        case AC_OUTPUT_POWER:           return "ac_output_power";           break;
+        case DC_OUTPUT_POWER:           return "dc_output_power";           break;
+        case ADR_0x0028_UINT:           return "adr_0x0028_uint";           break;
+        case POWER_GENERATION:          return "power_generation";          break;
+        case ADR_0x002A_UINT:           return "adr_0x002A_uint";           break;
+        case TOTAL_BATTERY_PERCENT:     return "total_battery_percent";     break;
+        case ADR_0x002C_UINT:           return "adr_0x002C_uint";           break;
+        case ADR_0x002D_UINT:           return "adr_0x002D_uint";           break;
+        case ADR_0x002E_UINT:           return "adr_0x002E_uint";           break;
+        case ADR_0x002F_UINT:           return "adr_0x002F_uint";           break;
+        case AC_OUTPUT_ON:              return "ac_output_on";              break;
+        case DC_OUTPUT_ON:              return "dc_output_on";              break;
+
+
+        case AC_OUTPUT_MODE:            return "ac_output_mode";            break;
+        case INTERNAL_AC_VOLTAGE:       return "internal_ac_voltage";       break;
+
+        case INTERNAL_CURRENT_ONE:      return "internal_current_one";      break;
+        case INTERNAL_POWER_ONE:        return "internal_power_one";        break;
+        case INTERNAL_AC_FREQUENCY:     return "internal_ac_frequency";     break;
+
+        case INTERNAL_CURRENT_TWO:      return "internal_current_two";      break;
+        case INTERNAL_POWER_TWO:        return "internal_power_two";        break;
+        case AC_INPUT_VOLTAGE:          return "ac_input_voltage";          break;
+
+        case INTERNAL_CURRENT_THREE:    return "internal_current_three";    break;
+        case INTERNAL_POWER_THREE:      return "internal_power_three";      break;
+        case AC_INPUT_FREQUENCY:        return "ac_input_frequency";        break;
+        case ADR_0x0051_UINT:           return "adr_0x0051_uint";           break;
+        case ADR_0x0052_UINT:           return "adr_0x0052_uint";           break;
+        case ADR_0x0053_UINT:           return "adr_0x0053_uint";           break;
+        case ADR_0x0054_UINT:           return "adr_0x0054_uint";           break;
+        case ADR_0x0055_UINT:           return "adr_0x0055_uint";           break;
+        case INTERNAL_DC_INPUT_VOLTAGE: return "internal_dc_input_voltage"; break;
+
+        case INTERNAL_DC_INPUT_POWER:   return "internal_dc_input_power";   break;
+        case INTERNAL_DC_INPUT_CURRENT: return "internal_dc_input_current"; break;
+        case ADR_0x0059_UINT:           return "adr_0x0059_uint";           break;
+        case ADR_0x005A_UINT:           return "adr_0x005A_uint";           break;
+
+        case PACK_NUM_MAX:              return "pack_max_nm";              break;
+        case TOTAL_BATTERY_VOLTAGE:     return "internal_pck_voltage";     break;
+        case TOTAL_BATTERY_CURRENT:     return "internal_pk_current";     break;
+        case ADR_0x005E_UINT:           return "adr_0x005Eint";           break;
+        case ADR_0x005F_UINT:           return "adr_0x005Fuint";           break;
+        case PACK_NUM:                  return "pack_num";                  break;
+        case PACK_STATUS:               return "pack_status";               break;
+        case PACK_VOLTAGE:              return "pack_voltage";              break;
+        case PACK_BATTERY_PERCENT:      return "pack_battery_percent";      break;
+        case ADR_0x0064_UINT:           return "adr_0x0064_uint";           break;
+        case ADR_0x0065_UINT:           return "adr_0x0065_uint";           break;
+        case ADR_0x0066_UINT:           return "adr_0x0066_uint";           break;
+        case ADR_0x0067_UINT:           return "adr_0x0067_uint";           break;
+        case ADR_0x0068_UINT:           return "adr_0x0068_uint";           break;
+        case CELL_VOLTAGES:             return "cell_voltages";              break;
+        case ADR_0x006A_UINT:           return "adr_0x006A_uint";           break;
+        case ADR_0x006B_UINT:           return "adr_0x006B_uint";           break;
+        case ADR_0x006C_UINT:           return "adr_0x006C_uint";           break;
+        case ADR_0x006D_UINT:           return "adr_0x006D_uint";           break;
+        case ADR_0x006E_UINT:           return "adr_0x006E_uint";           break;
+        case ADR_0x006F_UINT:           return "adr_0x006F_uint";           break;
+        case ADR_0x0070_UINT:           return "adr_0x0070_uint";           break;
+
+        case UPS_MODE:                  return "ups_mode";                  break;
+        case GRID_CHARGE_ON:            return "grid_charge_on";            break;
+        case AUTO_SLEEP_MODE:           return "auto_sleep_mode";           break;
+
+        case INTERNAL_CELL01_VOLTAGE:   return "internal_cell01_voltage";   break;
+        case INTERNAL_CELL02_VOLTAGE:   return "internal_cell02_voltage";   break;
+        case INTERNAL_CELL03_VOLTAGE:   return "internal_cell03_voltage";   break;
+        case INTERNAL_CELL04_VOLTAGE:   return "internal_cell04_voltage";   break;
+        case INTERNAL_CELL05_VOLTAGE:   return "internal_cell05_voltage";   break;
+        case INTERNAL_CELL06_VOLTAGE:   return "internal_cell06_voltage";   break;
+        case INTERNAL_CELL07_VOLTAGE:   return "internal_cell07_voltage";   break;
+        case INTERNAL_CELL08_VOLTAGE:   return "internal_cell08_voltage";   break;
+        case INTERNAL_CELL09_VOLTAGE:   return "internal_cell09_voltage";   break;
+        case INTERNAL_CELL10_VOLTAGE:   return "internal_cell10_voltage";   break;
+        case INTERNAL_CELL11_VOLTAGE:   return "internal_cell11_voltage";   break;
+        case INTERNAL_CELL12_VOLTAGE:   return "internal_cell12_voltage";   break;
+        case INTERNAL_CELL13_VOLTAGE:   return "internal_cell13_voltage";   break;
+        case INTERNAL_CELL14_VOLTAGE:   return "internal_cell14_voltage";   break;
+        case INTERNAL_CELL15_VOLTAGE:   return "internal_cell15_voltage";   break;
+        case INTERNAL_CELL16_VOLTAGE:   return "internal_cell16_voltage";   break;
+        case LED_MODE:                  return "led_mode";                  break;
+        case POWER_OFF:                 return "power_off";                 break;
+        case ECO_ON:                    return "eco_on";                    break;
+        case ECO_SHUTDOWN:              return "eco_shutdown";              break;
+        case CHARGING_MODE:             return "charging_mode";             break;
+        case POWER_LIFTING_ON:          return "power_lifting_on";          break;
+        case AC_INPUT_POWER_MAX:        return "ac_input_power_max";        break;
+        case AC_INPUT_CURRENT_MAX:      return "ac_input_current_max";      break;
+        case AC_OUTPUT_POWER_MAX:       return "ac_output_power_max";       break;
+        case AC_OUTPUT_CURRENT_MAX:     return "ac_output_current_max";     break;
+        case BATTERY_MIN_PERCENTAGE:    return "battery_min_percentage";    break;
+        case AC_CHARGE_MAX_PERCENTAGE:  return "ac_charge_max_percentage";  break;
         default:
           #ifdef DEBUG
               Serial.println(F("Info 'map_field_name' found unknown field!"));
