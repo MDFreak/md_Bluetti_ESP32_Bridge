@@ -12,7 +12,7 @@
   uint64_t parse_serial_field(uint8_t data[]);
   float parse_version_field(uint8_t data[]);
   String parse_string_field(uint8_t data[]);
-  String parse_enum_field(uint8_t data[]);
+  String parse_enum_field(uint8_t data[],uint8_t type);
 
   extern void parse_bluetooth_data(uint8_t page, uint8_t offset, uint8_t* pData, size_t length);
 #endif

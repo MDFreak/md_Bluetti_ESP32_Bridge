@@ -205,179 +205,560 @@ void sendBTCommand(bt_command_t command)
     void sendSIM_data()
       {
         uint8_t val[20];
-        for (int i = 0; i < 8 ; i++ ) //sizeof(bluetti_device_state) / sizeof(device_field_data_t); i++)
+        for (int i = 0; i < sizeof(bluetti_device_state) / sizeof(device_field_data_t); i++)
           {
-            switch(i)
+            switch(bluetti_device_state[i].f_name)
               {
-                case 0: // DEVICE_TYPE - STRINGFILD
-                    sprintf((char*) val, "AC300");
+                case DEVICE_TYPE: // STRINGFILD
+                    //sprintf((char*) val, "AC300");
+                    val[0]=0x41; val[1]=0x43; val[2]=0x33; val[3]=0x30; val[4]=0x30; val[5]=0x00;  // -> AC300
+                    val[6]=0x31; val[7]=0x32; val[8]=0x33; val[9]=0x34; val[10]=0x35; val[11]=0x36;
                     publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
-                    Serial.print("[BT] SIM - publish DEVICE_TYPE: ");
-                    Serial.println(parse_string_field((uint8_t*) val)); Serial.println();
+                      //Serial.print("[BT] SIM -  publish DEVICE_TYPE: ");
+                      //Serial.println(parse_string_field((uint8_t*) val)); Serial.println();
                   break;
-                case 1: // SERIAL_NUMBER - SN_FIELD
-                    char sn[16]; // 2235000574654
+                case ADR_0x0010_UINT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x10+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - ADR_0x0010_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case SERIAL_NUMBER: // SN_FIELD
+                    char sn[16]; // 2235000574654 =
                     val[0]=0x52; val[1]=0xBE; val[2]=0x60; val[3]=0x6A;
                     val[4]=0x02; val[5]=0x08; val[6]=0x00; val[7]=0x00;
                     sprintf(sn, "%lld", parse_serial_field(val));
                     publishTopic(bluetti_device_state[i].f_name, String(sn));
-                    Serial.print("[BT] SIM - publish SERIAL_NUMBER: ");
-                    Serial.println(String(sn)); Serial.println();
+                      //Serial.print("[BT] SIM - publish SERIAL_NUMBER: ");
+                      //Serial.println(String(sn)); Serial.println();
                   break;
-                case 2: // ARM_VERSION - VERSION_FIELD
+                case ADR_0x0012_UINT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x12+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - ADR_0x0012_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case ADR_0x0013_UINT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x13+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - ADR_0x0013_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case ARM_VERSION: // VERSION_FIELD
                     val[0]=0x28; val[1]=0xFB; val[2]=0x00; val[3]=0x06; // 4037.07
                     publishTopic(bluetti_device_state[i].f_name, String(parse_version_field(val),2));
-                    Serial.print("[BT] SIM - publish ARM_VERSION: ");
-                    Serial.println(String(parse_version_field(&val[0]),2)); Serial.println();
+                      //Serial.print("[BT] SIM - publish ARM_VERSION: ");
+                      //Serial.println(String(parse_version_field(&val[0]),2)); Serial.println();
                   break;
-                case 3: // DSP_VERSION - VERSION_FIELD
+                case DSP_VERSION: // VERSION_FIELD
                     val[0]=0x28; val[1]=0x92; val[2]=0x00; val[3]=0x06; //4036.02
                     publishTopic(bluetti_device_state[i].f_name, String(parse_version_field(val),2));
-                    Serial.print("[BT] SIM - publish DSP_VERSION: "); Serial.println();
-                    Serial.println(String(parse_version_field(&val[0]),2));
+                      //Serial.print("[BT] SIM - publish DSP_VERSION: "); Serial.println();
+                      //Serial.println(String(parse_version_field(&val[0]),2));
                   break;
-                case 4: // DC_INPUT_POWER - UINT_FIELD
-                    val[0]=0x07; val[1]=0x1F+simTick;   // -> 1823 (0B00)
+                case ADR_0x001B_UINT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x1B+simTick;   // -> 1823 (0B00)
                     publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
-                    Serial.print("[BT] SIM - DC_INPUT_POWER: ");
-                    Serial.println(String(parse_uint_field(val))); Serial.println();
+                      //Serial.print("[BT] SIM - ADR_0x001B_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case 5: // AC_INPUT_POWER - UINT_FIELD
-                    val[0]=0; val[1]=11+simTick;   // -> 11 (000B)
+                case ADR_0x001C_UINT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x1C+simTick;   // -> 1823 (0B00)
                     publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
-                    Serial.print("[BT] SIM - AC_INPUT_POWER: ");
-                    Serial.println(String(parse_uint_field(val))); Serial.println();
+                      //Serial.print("[BT] SIM - ADR_0x001C_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case 6: // AC_OUTPUT_POWER - UINT_FIELD
-                    val[0]=05; val[1]=0xC1+simTick;   // -> 5632 (1600)
+                case ADR_0x001D_UINT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x1D+simTick;   // -> 1823 (0B00)
                     publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
-                    Serial.print("[BT] SIM - AC_OUTPUT_POWER: ");
-                    Serial.println(String(parse_uint_field(val))); Serial.println();
+                      //Serial.print("[BT] SIM - ADR_0x001D_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case 7: // DC_OUTPUT_POWER - UINT_FIELD
-                    val[0]=0; val[1]=0x08+simTick;   // -> 8
+                case ADR_0x001E_UINT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x1E + simTick;   // -> 1823 (0B00)
                     publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
-                    Serial.print("[BT] SIM - DC_OUTPUT_POWER: ");
-                    Serial.println(String(parse_uint_field(val))); Serial.println();
+                      //Serial.print("[BT] SIM - ADR_0x001E_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case 8: // POWER_GENERATION - DECIMAL_FIELD
-                    val[0]=0; val[1]=0x08+simTick;   // -> 440.50
+                case ADR_0x001F_UINT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x1F + simTick;   // -> 1823 (0B00)
                     publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
-                    Serial.print("[BT] SIM - DC_OUTPUT_POWER: ");
-                    Serial.println(String(parse_uint_field(val))); Serial.println();
+                      //Serial.print("[BT] SIM - ADR_0x001F_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case 9: // TOTAL_BATTERY_PERCENT - UINT_FIELD
-                    //sprintf(val, "AC300");
-                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
-                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                case ADR_0x0020_UINT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x20 + simTick;   // -> 32
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - ADR_0x0020_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case 10: // AC_OUTPUT_ON - BOOL_FIELD
-                    //sprintf(val, "AC300");
-                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
-                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                case ADR_0x0021_UINT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x21  + simTick;   // -> 33
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - ADR_0x0021_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case 11: // DC_OUTPUT_ON - BOOL_FIELD
-                    //sprintf(val, "AC300");
-                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
-                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                case ADR_0x0022_UINT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x22 + simTick;   // -> 34
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - ADR_0x0022_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case 12: // AC_OUTPUT_MODE - UINT_FIELD
-                    //sprintf(val, "AC300");
-                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
-                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                case ADR_0x0023_UINT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x23 + simTick;   // -> 35
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - ADR_0x0023_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case 13: // INTERNAL_AC_VOLTAGE - DECIMAL_FIELD
-                    //sprintf(val, "AC300");
-                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
-                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
-                case 14: // INTERNAL_CURRENT_ONE - DECIMAL_FIELD
-                    //sprintf(val, "AC300");
-                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
-                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
-                case 15: // INTERNAL_POWER_ONE - UINT_FIELD
-                    //sprintf(val, "AC300");
-                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
-                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
-                case 16: // INTERNAL_AC_FREQUENCY - DECIMAL_FIELD
-                    //sprintf(val, "AC300");
-                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
-                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
-                case 17: // INTERNAL_CURRENT_TWO - DECIMAL_FIELD
-                    //sprintf(val, "AC300");
-                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
-                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
-                case 18: // INTERNAL_POWER_TWO - UINT_FIELD
-                    //sprintf(val, "AC300");
-                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
-                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
-                case 19: // AC_INPUT_VOLTAGE - DECIMAL_FIELD
-                    //sprintf(val, "AC300");
-                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
-                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
-                case 20: // INTERNAL_CURRENT_THREE - DECIMAL_FIELD
-                    //sprintf(val, "AC300");
-                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
-                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
-                case 21: // INTERNAL_POWER_THREE - UINT_FIELD
-                    //sprintf(val, "AC300");
-                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
-                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
-                case 22: // AC_INPUT_FREQUENCY - DECIMAL_FIELD
-                    //sprintf(val, "AC300");
-                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
-                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                case DC_INPUT_POWER: // UINT_FIELD
+                    val[0]=0x04; val[1]=0x00 + simTick;   // ->1024
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - DC_INPUT_POWER: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case 23: // INTERNAL_DC_INPUT_VOLTAGE - DECIMAL_FIELD
-                    //sprintf(val, "AC300");
-                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
-                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                case AC_INPUT_POWER: // UINT_FIELD
+                    val[0]=0; val[1]=00 + simTick;   // -> 0
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - AC_INPUT_POWER: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case 24: // INTERNAL_DC_INPUT_POWER - UINT_FIELD
-                    //sprintf(val, "AC300");
-                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
-                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                case AC_OUTPUT_POWER: // UINT_FIELD
+                    val[0]=06; val[1]=0x00 + simTick;   // -> 1536
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - AC_OUTPUT_POWER: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case 25: // INTERNAL_DC_INPUT_CURRENT - DECIMAL_FIELD
-                    //sprintf(val, "AC300");
-                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
-                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                case DC_OUTPUT_POWER: // UINT_FIELD
+                    val[0]=0; val[1]=0xB0+simTick;   // -> 176
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - DC_OUTPUT_POWER: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case 26: // PACK_NUM_MAX - UINT_FIELD
-                    //sprintf(val, "AC300");
-                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
-                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                case ADR_0x0028_UINT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x28 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - ADR_0x0028_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case 27: // TOTAL_BATTERY_VOLTAGE - DECIMAL_FIELD
-                    //sprintf(val, "AC300");
-                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
-                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                case POWER_GENERATION: // DECIMAL_FIELD
+                    val[0]=0x08; val[1]=0x00+simTick;   // -> 2048 (0800)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - DC_OUTPUT_POWER: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case 28: // PACK_NUM - UINT_FIELD
-                    //sprintf(val, "AC300");
-                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
-                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                case ADR_0x002A_UINT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x2A + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - ADR_0x002A_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case 29: // PACK_BATTERY_PERCENT - UINT_FIELD
-                    //sprintf(val, "AC300");
-                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
-                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                case TOTAL_BATTERY_PERCENT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x63 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - TOTAL_BATTERY_PERCENT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case 30: // UPS_MODE - UINT_FIELD
-                    //sprintf(val, "AC300");
-                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
-                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                case ADR_0x002C_UINT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x2C + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - ADR_0x002C_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case 31: // GRID_CHARGE_ON - BOOL_FIELD
-                    //sprintf(val, "AC300");
-                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
-                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                case ADR_0x002D_UINT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x2D + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - ADR_0x002D_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-                case 32: // AUTO_SLEEP_MODE - UINT_FIELD
-                    //sprintf(val, "AC300");
-                    //publishTopic(bluetti_device_state[i].f_name, parse_string_field((uint8_t*) val));
-                    //Serial.print(millis()); Serial.print("[BT] SIM - DEVICE_TYPE: "); Serial.println(val);
+                case ADR_0x002E_UINT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x2E + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - ADR_0x002E_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
                   break;
-
+                case ADR_0x002F_UINT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x2F + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - ADR_0x002F_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case AC_OUTPUT_ON: // BOOL_FIELD
+                    val[0]=0x00; val[1]=0x00 + (simTick > 0);   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - AC_OUTPUT_ON: ");
+                      //Serial.println(String(parse_bool_field(val))); Serial.println();
+                  break;
+                case DC_OUTPUT_ON: // BOOL_FIELD
+                    val[0]=0x00; val[1]=0x00 + (simTick > 0);   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      // Serial.print("[BT] SIM - DC_OUTPUT_ON: ");
+                      // Serial.println(String(parse_bool_field(val))); Serial.println();
+                  break;
+                case AC_OUTPUT_MODE: // ENUM_FIELD
+                    val[0]=0x00; val[1]=0x00 + simTick/2;
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_enum_field(val,bluetti_device_state[i].f_type)));
+                      //Serial.print("[BT] SIM - AC_OUTPUT_MODE: ");
+                      //Serial.println(String(parse_enum_field(val, bluetti_device_state[i].f_type))); Serial.println();
+                  break;
+                case INTERNAL_AC_VOLTAGE: // DECIMAL_FIELD
+                    val[0]=0x09; val[1]=0x02;   // -> 230,6
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_decimal_field(val, bluetti_device_state[i].f_scale ), 2) );
+                      //Serial.print("[BT] SIM - INTERNAL_AC_VOLTAGE: ");
+                      //Serial.println(String(parse_decimal_field(val, bluetti_device_state[i].f_scale ), 2) ); Serial.println();
+                case INTERNAL_CURRENT_ONE: // DECIMAL_FIELD
+                    val[0]=0x00; val[1]=0x2A+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_decimal_field(val, bluetti_device_state[i].f_scale ), 2) );
+                      //Serial.print("[BT] SIM - INTERNAL_CURRENT_ONE: ");
+                      //Serial.println(String(parse_decimal_field(val, bluetti_device_state[i].f_scale ), 2) ); Serial.println();
+                case INTERNAL_POWER_ONE: // UINT_FIELD
+                    val[0]=0x1F; val[1]=0x40 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - INTERNAL_POWER_ONE: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
+                case INTERNAL_CURRENT_TWO: // DECIMAL_FIELD
+                    val[0]=0x00; val[1]=0x2A+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_decimal_field(val, bluetti_device_state[i].f_scale ), 2) );
+                      //Serial.print("[BT] SIM - INTERNAL_CURRENT_TWO: ");
+                      //Serial.println(String(parse_decimal_field(val, bluetti_device_state[i].f_scale ), 2) ); Serial.println();
+                case INTERNAL_POWER_TWO: // UINT_FIELD
+                    val[0]=0x1F; val[1]=0x50 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - INTERNAL_POWER_TWO: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
+                case AC_INPUT_VOLTAGE: // DECIMAL_FIELD
+                    val[0]=0x00; val[1]=0x00 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_decimal_field(val, bluetti_device_state[i].f_scale ), 2) );
+                      //Serial.print("[BT] SIM - AC_INPUT_VOLTAGE: ");
+                      //Serial.println(String(parse_decimal_field(val, bluetti_device_state[i].f_scale ), 2) ); Serial.println();
+                case INTERNAL_CURRENT_THREE: // DECIMAL_FIELD
+                    val[0]=0x00; val[1]=0x00 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_decimal_field(val, bluetti_device_state[i].f_scale ), 2) );
+                      //Serial.print("[BT] SIM - INTERNAL_CURRENT_THREE: ");
+                      //Serial.println(String(parse_decimal_field(val, bluetti_device_state[i].f_scale ), 2) ); Serial.println();
+                case INTERNAL_POWER_THREE: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x00 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - INTERNAL_POWER_THREE: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
+                case AC_INPUT_FREQUENCY: // DECIMAL_FIELD
+                    val[0]=0x13; val[1]=0x88 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_decimal_field(val, bluetti_device_state[i].f_scale ), 2) );
+                      //Serial.print("[BT] SIM - AC_INPUT_FREQUENCY: ");
+                      //Serial.println(String(parse_decimal_field(val, bluetti_device_state[i].f_scale ), 2) ); Serial.println();
+                  break;
+                case ADR_0x0051_UINT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x51 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - ADR_0x0051_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case ADR_0x0052_UINT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x52 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - ADR_0x0052_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case ADR_0x0053_UINT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x53 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - ADR_0x0053_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case ADR_0x0054_UINT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x54+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - ADR_0x0054_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case ADR_0x0055_UINT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x55+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - ADR_0x0055_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case INTERNAL_DC_INPUT_VOLTAGE: // DECIMAL_FIELD
+                    val[0]=0x00; val[1]=0x80 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_decimal_field(val, bluetti_device_state[i].f_scale ), 2) );
+                      //Serial.print("[BT] SIM - INTERNAL_DC_INPUT_VOLTAGE: ");
+                      //Serial.println(String(parse_decimal_field(val, bluetti_device_state[i].f_scale ), 2) ); Serial.println();
+                  break;
+                case INTERNAL_DC_INPUT_POWER: // UINT_FIELD
+                    val[0]=0x08; val[1]=0x00 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - INTERNAL_DC_INPUT_POWER: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case INTERNAL_DC_INPUT_CURRENT: // DECIMAL_FIELD
+                    val[0]=0x00; val[1]=0xFF+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_decimal_field(val, bluetti_device_state[i].f_scale ), 2) );
+                      //Serial.print("[BT] SIM - INTERNAL_AC_INTERNAL_DC_INPUT_CURRENTVOLTAGE: ");
+                      //Serial.println(String(parse_decimal_field(val, bluetti_device_state[i].f_scale ), 2) ); Serial.println();
+                  break;
+                case ADR_0x0059_UINT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x59 + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - ADR_0x0059_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case ADR_0x005A_UINT: // UINT_FIELD
+                    val[0]=0x00; val[1]=0x5A + simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - ADR_0x005A_UINT: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case PACK_NUM_MAX: //UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                      //Serial.print("[BT] SIM - PACK_NUM_MAX: ");
+                      //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case TOTAL_BATTERY_VOLTAGE: // DECIMAL_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_decimal_field(val, bluetti_device_state[i].f_scale ), 2) );
+                    //Serial.print("[BT] SIM - TOTAL_BATTERY_VOLTAGE: ");
+                    //Serial.println(String(parse_decimal_field(val, bluetti_device_state[i].f_scale ), 2) ); Serial.println();
+                  break;
+                case TOTAL_BATTERY_CURRENT: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - TOTAL_BATTERY_CURRENT: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case ADR_0x005E_UINT: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - ADR_0x005E_UINT: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case ADR_0x005F_UINT: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - ADR_0x005F_UINT: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case PACK_NUM: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - PACK_NUM: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case PACK_STATUS: // ENUM_FIELD
+                    val[0]=0x00; val[1]=0x00+simTick;
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_enum_field(val, bluetti_device_state[i].f_type)));
+                    //Serial.print("[BT] SIM - PACK_STATUS: ");
+                    //Serial.println(String(parse_enum_field(val, bluetti_device_state[i].f_type))); Serial.println();
+                  break;
+                case PACK_VOLTAGE: // DECIMAL_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - PACK_VOLTAGE: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case PACK_BATTERY_PERCENT: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - PACK_BATTERY_PERCENT: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case ADR_0x0064_UINT: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - ADR_0x0064_UINT: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case ADR_0x0065_UINT: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - ADR_0x0065_UINT: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case ADR_0x0066_UINT: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - ADR_0x0066_UINT: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case ADR_0x0067_UINT: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - ADR_0x0067_UINT: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case ADR_0x0068_UINT: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - ADR_0x0068_UINT: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case CELL_VOLTAGES: // DEC_ARRAY_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - CELL_VOLTAGES: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case ADR_0x0089_UINT: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - ADR_0x0089_UINT: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case ADR_0x008A_UINT: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - ADR_0x008A_UINT: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case ADR_0x008B_UINT: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - ADR_0x008B_UINT: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case ADR_0x008C_UINT: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - ADR_0x008C_UINT: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case ADR_0x008D_UINT: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - ADR_0x008D_UINT: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case ADR_0x008E_UINT: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - ADR_0x008E_UINT: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case ADR_0x008F_UINT: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - ADR_0x008F_UINT: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                // page 0x0B -> 2816+
+                case  UPS_MODE: // ENUM_FIELD
+                    val[0]=0x00; val[1]=0x00+simTick;
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_enum_field(val, bluetti_device_state[i].f_type)));
+                    //Serial.print("[BT] SIM - UPS_MODE: ");
+                    //Serial.println(String(parse_enum_field(val, bluetti_device_state[i].f_type))); Serial.println();
+                  break;
+                case ADR_0x0BBA_UINT: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - ADR_0x0BBA_UINT: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case ADR_0x0BBB_UINT: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - ADR_0x0BBB_UINT: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case SPLIT_PHASE_ON: // BOOL_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - SPLIT_PHASE_ON: ");
+                    //Serial.println(String(parse_bool_field(val))); Serial.println();
+                  break;
+                case SPLIT_PHASE_MACHINE_MODE: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - SPLIT_PHASE_MACHINE_MODE: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case PACK_NUM_SET: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - PACK_NUM_SET: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case AC_OUTPUT_CTRL: // BOOL_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - AC_OUTPUT_CTRL: ");
+                    //Serial.println(String(parse_bool_field(val))); Serial.println();
+                  break;
+                case DC_OUTPUT_CTRL: // BOOL_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - DC_OUTPUT_CTRL: ");
+                    //Serial.println(String(parse_bool_field(val))); Serial.println();
+                  break;
+                case ADR_0x0BC1_UINT: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - ADR_0x0BC1_UINT: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case ADR_0x0BC2_UINT: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - ADR_0x0BC2_UINT: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case GRID_CHARGE_ON: // BOOL_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - GRID_CHARCHE_ON: ");
+                    //Serial.println(String(parse_bool_field(val))); Serial.println();
+                  break;
+                case ADR_0x0BC4_UINT: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - ADR_0x0BC4_UINT: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case TIME_CONTROL_ON: // BOOL_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - TIME_CONTROL_ON: ");
+                    //Serial.println(String(parse_bool_field(val))); Serial.println();
+                  break;
+                case ADR_0x0BC6_UINT: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - ADR_0x0BC6_UINT: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case BATTERY_RANGE_START: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - BATTERY_RANGE_START: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case BATTERY_RANGE_END: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - BATTERY_RANGE_END: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case  ADR_0x0BDA_UINT: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - ADR_0x0BDA_UINT: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case  ADR_0x0BDB_UINT: // UINT_FIELD
+                    val[0]=0x5A; val[1]=0xA5+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - ADR_0x0BDB_UINT: ");
+                    //Serial.println(String(parse_uint_field(val))); Serial.println();
+                  break;
+                case  BLUETOOTH_CONNECTED: // BOOL_FIELD
+                    val[0]=0x00; val[1]=0x00+simTick;   // -> 1823 (0B00)
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_uint_field(val)));
+                    //Serial.print("[BT] SIM - BLUETOOTH_CONNECTED: ");
+                    //Serial.println(String(parse_bool_field(val))); Serial.println();
+                  break;
+                case  AUTO_SLEEP_MODE: // ENUM_FIELD
+                    val[0]=0x00; val[1]=0x00+simTick;
+                    publishTopic(bluetti_device_state[i].f_name, String(parse_enum_field(val, bluetti_device_state[i].f_type)));
+                    //Serial.print("[BT] SIM - AUTO_SLEEP_MODE: ");
+                    //Serial.println(String(parse_enum_field(val, bluetti_device_state[i].f_type))); Serial.println();
+                  break;
               }
           }
         simTick++;

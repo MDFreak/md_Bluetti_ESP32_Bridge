@@ -8,18 +8,18 @@ uint16_t parse_uint_field(uint8_t data[])
   {
     return ((uint16_t)data[0] << 8) | (uint16_t)data[1];
   }
-bool parse_bool_field(uint8_t data[])
+bool     parse_bool_field(uint8_t data[])
   {
     return (data[1]) == 1;
   }
-float parse_decimal_field(uint8_t data[], uint8_t scale)
+float    parse_decimal_field(uint8_t data[], uint8_t scale)
   {
     uint16_t raw_value = ((uint16_t)data[0] << 8) | (uint16_t)data[1];
     return (raw_value) / pow(10, scale);
   }
-float  parse_version_field(uint8_t data[])
+float    parse_version_field(uint8_t data[])
   { // (high16(big end) + low16(big end) -> (high16(little end) + low16(little end)) / 100
-    uint16_t low = ((uint16_t)data[0] << 8) | (uint16_t)data[1];
+    uint16_t low  = ((uint16_t)data[0] << 8) | (uint16_t)data[1];
     uint16_t high = ((uint16_t)data[2] << 8) | (uint16_t)data[3];
     long val = (low) | (high << 16);
     return (float)val / 100;
@@ -33,16 +33,80 @@ uint64_t parse_serial_field(uint8_t data[])
     uint64_t sn = ((((uint64_t)val1) | ((uint64_t)val2 << 16)) | ((uint64_t)val3 << 32)) | ((uint64_t)val4 << 48);
     return sn;
   }
-String parse_string_field(uint8_t data[])
+String   parse_string_field(uint8_t data[])
   {
     return String((char*)data);
   }
 // not implemented yet, leads to nothing
-String parse_enum_field(uint8_t data[])
+String   parse_enum_field(uint8_t data[], uint8_t type)
   {
+    if     (type == OUT_MODE_t)
+      {
+        String tmp[ANZ_OutputMode] = {"STOP", "INVERTER_OUTPUT", "BYPASS_OUTPUT_C", "BYPASS_OUTPUT_D", "LOAD_MATCHING"};
+        Serial.println();
+        Serial.print("OUT_MODE_t: "); Serial.println(tmp[data[1]]);
+        Serial.println();
+        if (data[1] < ANZ_OutputMode) { return tmp[data[1]]; };
+      }
+    else if(type == UPS_MODE_t)
+      {
+        String tmp[ANZ_UPS_Mode] = {"CUSTOMIZED", "PV_PRIORITY", "STANDARD", "TIME_CONTROl"};
+        Serial.println();
+        Serial.print("UPS_MODE_t: "); Serial.println(tmp[data[1]]);
+        Serial.println();
+        if (data[1] < ANZ_UPS_Mode) { return tmp[data[1]]; };
+      }
+    else if(type == BATT_STATE_t)
+      {
+        String tmp[ANZ_BatteryState] = {"STANDBY", "CHARGE", "DISCHARGE"};
+        Serial.println();
+        Serial.print("BATT_STATE_t: "); Serial.println(tmp[data[1]]);
+        Serial.println();
+        if (data[1] < ANZ_BatteryState) { return tmp[data[1]]; };
+      }
+    else if(type == SLAVE_TYPE_t)
+      {
+        String tmp[ANZ_MasterType] = {"SLAVE", "MASTER"};
+        Serial.println();
+        Serial.print("SLAVE_TYPE_t: "); Serial.println(tmp[data[1]]);
+        Serial.println();
+        if (data[1] < ANZ_MasterType) { return tmp[data[1]]; };
+      }
+    else if(type == AUTO_SLEEP_t)
+      {
+        String tmp[ANZ_AutoSleepMode] = {"THIRTY_SECONDS", "ONE_MINNUTE", "FIVE_MINUTES", "NEVER"};
+        Serial.println();
+        Serial.print("AUTO_SLEEP_t: "); Serial.println(tmp[data[1]]);
+        Serial.println();
+        if (data[1] < ANZ_AutoSleepMode) { return tmp[data[1]]; };
+      }
+    else if(type == LED_MODE_t)
+      {
+        String tmp[ANZ_LedMode] = {"LED_LOW", "LED_HIGH", "LED_SOS", "LED_OFF"};
+        Serial.println();
+        Serial.print("LED_MODE_t: "); Serial.println(tmp[data[1]]);
+        Serial.println();
+        if (data[1] < ANZ_LedMode) { return tmp[data[1]]; };
+      }
+    else if(type == SHUTDOWN_t)
+      {
+        String tmp[ANZ_EcoShutdown] = {"ONE_HOUR", "TWO_HOURS", "THREE_HOURS", "FOUR_HOURS"};
+        Serial.println();
+        Serial.print("SHUTDOWN_t: "); Serial.println(tmp[data[1]]);
+        Serial.println();
+        if (data[1] < ANZ_EcoShutdown) { return tmp[data[1]]; };
+      }
+    else if(type == CHARG_MODE_t)
+      {
+        String tmp[ANZ_ChargingMode] = {"STANDARD", "SILENT", "TURBO"};
+        Serial.println();
+        Serial.print("CHARG_MODE_t: "); Serial.println(tmp[data[1]]);
+        Serial.println();
+        if (data[1] < ANZ_ChargingMode) { return tmp[data[1]]; };
+      }
     return "";
   }
-void parse_bluetooth_data(uint8_t page, uint8_t offset, uint8_t* pData, size_t length)
+void     parse_bluetooth_data(uint8_t page, uint8_t offset, uint8_t* pData, size_t length)
   {
     char Byte_In_Hex_offset[3];
     char Byte_In_Hex_page[3];
@@ -101,7 +165,7 @@ void parse_bluetooth_data(uint8_t page, uint8_t offset, uint8_t* pData, size_t l
                       case DEC_ARRAY_FIELD:
                         break;
                       case ENUM_FIELD:
-                        publishTopic(bluetti_device_state[i].f_name, parse_enum_field(data_payload_field));
+                        publishTopic(bluetti_device_state[i].f_name, parse_enum_field(data_payload_field,bluetti_device_state[i].f_type));
                         break;
                       default:
                         break;
