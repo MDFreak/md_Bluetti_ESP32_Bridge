@@ -109,7 +109,7 @@
         {AC_OUTPUT_POWER,           0x00, 0x26,  1, 0, 0,             UINT_FIELD},    //  38    2   58    0x26
         {DC_OUTPUT_POWER,           0x00, 0x27,  1, 0, 0,             UINT_FIELD},    //  39    2   60    0x27
         { ADR_0x0028_UINT,          0x00, 0x28,  1, 0, 0,             UINT_FIELD},    //  40    2   62    0x28
-        {POWER_GENERATION,          0x00, 0x29,  1, 1, 0,             DECIMAL_FIELD}, //  41    2   64    0x29
+        {POWER_GENERATION,          0x00, 0x29,  1, 2, 0,             DECIMAL_FIELD}, //  41    2   64    0x29
         { ADR_0x002A_UINT,          0x00, 0x2A,  1, 0, 0,             UINT_FIELD},    //  42    2   66    0x2A
         {TOTAL_BATTERY_PERCENT,     0x00, 0x2B,  1, 0, 0,             UINT_FIELD},    //  43    2   68    0x2B
         { ADR_0x002C_UINT,          0x00, 0x2C,  1, 0, 0,             UINT_FIELD},    //  44    2   70    0x2C
@@ -153,21 +153,21 @@
         { ADR_0x005F_UINT,          0x00, 0x5F,  1, 0, 0,             UINT_FIELD},    //  95    2   10  0x5F
         {PACK_NUM,                  0x00, 0x60,  1, 0, 0,             UINT_FIELD},    //  96    2   12  0x60
         {PACK_STATUS,               0x00, 0x61,  1, 0, BATT_STATE_t,  ENUM_FIELD},    //  97    2   14  0x61
-        {PACK_VOLTAGE,              0x00, 0x62,  1, 2, 0,          DECIMAL_FIELD}, //  98    2   16  0x62
+        {PACK_VOLTAGE,              0x00, 0x62,  1, 2, 0,             DECIMAL_FIELD}, //  98    2   16  0x62
         {PACK_BATTERY_PERCENT,      0x00, 0x63,  1, 0, 0,             UINT_FIELD},    //  99    2   18  0x63
         { ADR_0x0064_UINT,          0x00, 0x64,  1, 0, 0,             UINT_FIELD},    // 100    2   20  0x64
         { ADR_0x0065_UINT,          0x00, 0x65,  1, 0, 0,             UINT_FIELD},    // 101    2   22  0x65
         { ADR_0x0066_UINT,          0x00, 0x66,  1, 0, 0,             UINT_FIELD},    // 102    2   24  0x66
         { ADR_0x0067_UINT,          0x00, 0x67,  1, 0, 0,             UINT_FIELD},    // 103    2   26  0x67
         { ADR_0x0068_UINT,          0x00, 0x68,  1, 0, 0,             UINT_FIELD},    // 104    2   28  0x68
-        {CELL_VOLTAGES,             0x00, 0x69, 16, 2, 0,        DEC_ARRAY_FIELD},  // 105   32   60  0x88
-        { ADR_0x0089_UINT,          0x00, 0x8A,  1, 0, 0,             UINT_FIELD},    // 106    2   62  0x89
-        { ADR_0x008A_UINT,          0x00, 0x8B,  1, 0, 0,             UINT_FIELD},    // 107    2   64  0x8A
-        { ADR_0x008B_UINT,          0x00, 0x8C,  1, 0, 0,             UINT_FIELD},    // 108    2   66  0x8B
-        { ADR_0x008C_UINT,          0x00, 0x8D,  1, 0, 0,             UINT_FIELD},    // 109    2   68  0x8C
-        { ADR_0x008D_UINT,          0x00, 0x8E,  1, 0, 0,             UINT_FIELD},    // 110    2   70  0x8D
-        { ADR_0x008E_UINT,          0x00, 0x8F,  1, 0, 0,             UINT_FIELD},    // 111    2   72  0x8E
-        { ADR_0x008F_UINT,          0x00, 0x80,  1, 0, 0,             UINT_FIELD},    // 112    2   74  0x8F
+        {CELL_VOLTAGES,             0x00, 0x69, 16, 2, CELL_VOLTAGES, DECIMAL_ARRAY}, // 105   32   60  0x88
+        { ADR_0x0089_UINT,          0x00, 0x89,  1, 0, 0,             UINT_FIELD},    // 106    2   62  0x89
+        { ADR_0x008A_UINT,          0x00, 0x8A,  1, 0, 0,             UINT_FIELD},    // 107    2   64  0x8A
+        { ADR_0x008B_UINT,          0x00, 0x8B,  1, 0, 0,             UINT_FIELD},    // 108    2   66  0x8B
+        { ADR_0x008C_UINT,          0x00, 0x8C,  1, 0, 0,             UINT_FIELD},    // 109    2   68  0x8C
+        { ADR_0x008D_UINT,          0x00, 0x8D,  1, 0, 0,             UINT_FIELD},    // 110    2   70  0x8D
+        { ADR_0x008E_UINT,          0x00, 0x8E,  1, 0, 0,             UINT_FIELD},    // 111    2   72  0x8E
+        { ADR_0x008F_UINT,          0x00, 0x8F,  1, 0, 0,             UINT_FIELD},    // 112    2   74  0x8F
                                                                           // poll 6 end
                                                                           // poll 2
         {UPS_MODE,                  0x0B, 0xB9,  1, 0, UPS_MODE_t,    ENUM_FIELD},     // 3001    2    2  0xB9
@@ -188,6 +188,8 @@
         {BATTERY_RANGE_END,         0x0B, 0xC8,  1, 0, 0,             BOOL_FIELD},     // 3016    2   32  0xC8
                                                                          // poll 2 end
         // -----------------------
+        {ADR_0x0BDA_UINT,           0x0B, 0xDA,  1, 0, 0,             UINT_FIELD},     // 3034    2       0xDC
+        {ADR_0x0BDB_UINT,           0x0B, 0xDB,  1, 0, 0,             UINT_FIELD},     // 3035    2       0xDC
         {BLUETOOTH_CONNECTED,       0x0B, 0xDC,  1, 0, 0,             BOOL_FIELD},     // 3036    2       0xDC
         // -----------------------
         {AUTO_SLEEP_MODE,           0x0B, 0xF5,  1, 0, 0,             BOOL_FIELD}      // 3061    2       0xF5
@@ -233,13 +235,25 @@
         {FIELD_UNDEFINED, 0x0B, 0xF5, 0x07 ,0 , 0, TYPE_UNDEFINED},
         //Pack Polling
         {FIELD_UNDEFINED, 0x00, 0x5B, 0x25 ,0 , 0, TYPE_UNDEFINED}
+        //{FIELD_UNDEFINED, 0x00, 0x5B, 0x25 ,0 , 0, TYPE_UNDEFINED}
       };
+      #ifdef SIM_BLUETTI
+          static device_field_idx_t bluetti_poll_idx[] =
+            {
+              {DEVICE_TYPE,     DC_OUTPUT_ON},
+              {AC_OUTPUT_MODE,  ADR_0x005A_UINT},
+              {UPS_MODE,        BATTERY_RANGE_END},
+              {ADR_0x0BDA_UINT, BLUETOOTH_CONNECTED},
+              {AUTO_SLEEP_MODE, ADR_0x0BFB_UINT},
+              {PACK_NUM_MAX,    ADR_0x008F_UINT}
+            };
+        #endif
   #endif
 #endif
 /* MD0.1.0 - 2025-01-18 - md - extend functionality for AC300
  * - add and synchronize enums and fields in Device_AC300.h and DeviceType.h
  * - extend simulation in BTooth.cpp
- * - update and add evaluation of 'ENUM_FIELD' and 'DEC_ARRAY_FIELD'
+ * - update and add evaluation of 'ENUM_FIELD' and 'DECIMAL_ARRAY'
  *///------------------------------------------------------------------------------------
 /* MD0.0.1 - 2025-01-11 - md - initial version
  * - change code format to MD format for better readability
